@@ -5,7 +5,7 @@ module LazyHighCharts
 
     SERIES_OPTIONS = %w(data index legendIndex name stack type xAxis yAxis)
 
-    attr_accessor :series_data, :options, :placeholder, :html_options
+    attr_accessor :series_data, :options, :placeholder, :html_options, :arbitrary_text
     alias :canvas :placeholder
     alias :canvas= :placeholder=
 
@@ -34,6 +34,13 @@ module LazyHighCharts
       self.subtitle({})
     end
 
+    # Add arbitrary text to the chart once its been been drawn
+    #
+    #
+    def add_text(text, x, y, css = {})
+      @arbitrary_text ||= []
+      @arbitrary_text << {text: text, x: x, y: y, css: css}
+    end
 
     # Pass other methods through to the javascript high_chart object.
     #
@@ -51,7 +58,7 @@ module LazyHighCharts
     end
 
     # Add a simple series to the graph:
-    # 
+    #
     #   data = [[0,5], [1,5], [2,5]]
     #   @high_chart.series :name=>'Updated', :data=>data
     #   @high_chart.series :name=>'Updated', :data=>[5, 1, 6, 1, 5, 4, 9]

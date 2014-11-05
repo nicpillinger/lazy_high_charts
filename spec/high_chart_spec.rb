@@ -71,7 +71,7 @@ describe "HighChart" do
       chart = LazyHighCharts::HighChart.new('graph') do |f|
         f.series(:name => 'John', :data => [3, 20])
         f.series(:name => 'Jane', :data => [1, 3])
-        # without overriding 
+        # without overriding
         f.options[:chart][:defaultSeriesType] = "area"
         f.options[:chart][:inverted] = true
         f.options[:legend][:layout] = "horizontal"
@@ -106,7 +106,7 @@ describe "HighChart" do
         f.series(:name => 'John', :data => [3, 20])
         f.series(:name => 'Jane', :data => [1, 3])
         f.title({:text => nil})
-        # without overriding 
+        # without overriding
         f.x_axis(:categories => ["uno", "dos", "tres", "cuatro"], :labels => {:rotation => -45, :align => 'right'})
         f.chart({:defaultSeriesType => "spline", :renderTo => "myRenderArea", :inverted => true})
         f.subtitle({:text => "Bar"})
@@ -156,4 +156,43 @@ describe "HighChart" do
       expect { subject.to_ary }.to raise_error(NoMethodError)
     end
   end
+
+  describe 'add text' do
+    let(:text_to_be_added) { "some arbitrary text to place on the chart" }
+    let(:at_x) { 10 }
+    let(:at_y) { 10 }
+
+    subject { LazyHighCharts::HighChart.new }
+
+    context 'arbitrary text is added to a chart' do
+      it 'the text and parameters are stored for later use' do
+        subject.add_text(text_to_be_added, at_x, at_y)
+
+        expect(subject.arbitrary_text.first[:text]).to eq(text_to_be_added)
+        expect(subject.arbitrary_text.first[:x]).to eq(at_x)
+        expect(subject.arbitrary_text.first[:y]).to eq(at_y)
+      end
+    end
+
+    context 'styled text is added' do
+      let(:styling) { "color: '#4572A7'" }
+      it 'stores the additional styling passed for later use' do
+        subject.add_text(text_to_be_added, at_x, at_y, styling)
+
+        expect(subject.arbitrary_text.first[:css]).to eq(styling)
+      end
+    end
+
+    context 'multiple bits of text are added' do
+      it 'stores all text for later use' do
+        subject.add_text(text_to_be_added, at_x, at_y)
+        subject.add_text("some more text", at_x + 10, at_y + 10)
+
+        expect(subject.arbitrary_text.last[:text]).to eq("some more text")
+        expect(subject.arbitrary_text.last[:x]).to eq(at_x + 10)
+        expect(subject.arbitrary_text.last[:y]).to eq(at_y + 10)
+      end
+    end
+  end
+
 end

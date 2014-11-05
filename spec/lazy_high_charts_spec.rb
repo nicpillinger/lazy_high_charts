@@ -62,6 +62,17 @@ describe HighChartsHelper do
         expect(high_chart("PlaceHolder",  @chart)).to match(/window.chart_place_holder\s=/)
       end
     end
+
+    describe "setting arbitrary text" do
+      before(:each) do
+        @chart.add_text("some text", 1, 1)
+      end
+      context 'if arbitrary text has been added' do
+        it 'should call renderer.text().add() post chart initialize' do
+          expect(high_chart(@placeholder, @chart)).to include 'window.chart_placeholder.renderer.text("some text", 1, 1).css({}).add();'
+        end
+      end
+    end
   end
 
 
