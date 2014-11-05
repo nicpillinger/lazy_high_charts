@@ -64,12 +64,19 @@ describe HighChartsHelper do
     end
 
     describe "setting arbitrary text" do
-      before(:each) do
-        @chart.add_text("some text", 1, 1)
-      end
       context 'if arbitrary text has been added' do
-        it 'should call renderer.text().add() post chart initialize' do
-          expect(high_chart(@placeholder, @chart)).to include 'window.chart_placeholder.renderer.text("some text", 1, 1).css({}).add();'
+        before(:each) do
+          @chart.add_text("some text", 1, 1)
+          @chart.add_text("some more text", 2, 2)
+        end
+
+        it 'should add call renderer.text().add() post chart initialize' do
+          expect(high_chart(@placeholder, @chart)).to include 'window.chart_placeholder.renderer.text("some text", 1, 1).css({}).add(); window.chart_placeholder.renderer.text("some more text", 2, 2).css({}).add();'
+        end
+      end
+      context 'no arbitrary text added' do
+        it 'should not call renderer.text()' do
+          expect(high_chart(@placeholder, @chart)).to_not include 'window.chart_placeholder.renderer.text'
         end
       end
     end

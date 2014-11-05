@@ -28,13 +28,15 @@ module LazyHighCharts
       options_collection = [generate_json_from_hash(OptionsKeyFilter.filter(object.options))]
       options_collection << %|"series": [#{generate_json_from_array(object.series_data)}]|
 
+      arbitrary_text = object.arbitrary_text.map do |arbitrary_text|
+        "window.chart_#{placeholder.underscore}.renderer.text(\"#{arbitrary_text[:text]}\", #{arbitrary_text[:x]}, #{arbitrary_text[:y]}).css({#{generate_json_from_hash(arbitrary_text[:css])}}).add();"
+      end.join(" ") unless object.arbitrary_text.nil?
+
       core_js =<<-EOJS
         var options = { #{options_collection.join(',')} };
         #{capture(&block) if block_given?}
         window.chart_#{placeholder.underscore} = new Highcharts.#{type}(options);
-        #{object.arbitrary_text.map do |arbitrary_text|
-          "window.chart_#{placeholder.underscore}.renderer.text(\"#{arbitrary_text[:text]}\", #{arbitrary_text[:x]}, #{arbitrary_text[:y]}).css({#{generate_json_from_hash(arbitrary_text[:css])}}).add();"
-        end.join('\n') unless object.arbitrary_text.nil?}
+        #{arbitrary_text unless arbitrary_text.nil?}
       EOJS
 
       if defined?(request) && request.respond_to?(:xhr?) && request.xhr?
